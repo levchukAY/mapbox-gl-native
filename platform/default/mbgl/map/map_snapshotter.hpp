@@ -28,6 +28,7 @@ public:
     MapSnapshotter(FileSource& fileSource,
                    Scheduler& scheduler,
                    const std::string& styleURL,
+                   const optional<std::string> styleJSON,
                    const Size&,
                    const float pixelRatio,
                    const CameraOptions&,
