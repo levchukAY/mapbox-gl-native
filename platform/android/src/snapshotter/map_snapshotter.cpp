@@ -20,6 +20,7 @@ MapSnapshotter::MapSnapshotter(jni::JNIEnv& _env,
                                jni::jint width,
                                jni::jint height,
                                jni::String styleURL,
+                               jni::String styleJSON,
                                jni::Object<LatLngBounds> region,
                                jni::Object<CameraPosition> position,
                                jni::jboolean _showLogo,
@@ -42,12 +43,18 @@ MapSnapshotter::MapSnapshotter(jni::JNIEnv& _env,
     if (region) {
         bounds = LatLngBounds::getLatLngBounds(_env, region);
     }
+
+    optional<std::string> style;
+    if (styleJSON) {
+        style = jni::Make<std::string>(_env, styleJSON);
+    }
     
     showLogo = _showLogo;
     // Create the core snapshotter
     snapshotter = std::make_unique<mbgl::MapSnapshotter>(fileSource,
                                                          *threadPool,
                                                          jni::Make<std::string>(_env, styleURL),
+                                                         style,
                                                          size,
                                                          pixelRatio,
                                                          cameraOptions,
@@ -141,7 +148,7 @@ void MapSnapshotter::registerNative(jni::JNIEnv& env) {
 
     // Register the peer
     jni::RegisterNativePeer<MapSnapshotter>(env, MapSnapshotter::javaClass, "nativePtr",
-                                            std::make_unique<MapSnapshotter, JNIEnv&, jni::Object<MapSnapshotter>, jni::Object<FileSource>, jni::jfloat, jni::jint, jni::jint, jni::String, jni::Object<LatLngBounds>, jni::Object<CameraPosition>, jni::jboolean, jni::String>,
+                                            std::make_unique<MapSnapshotter, JNIEnv&, jni::Object<MapSnapshotter>, jni::Object<FileSource>, jni::jfloat, jni::jint, jni::jint, jni::String, jni::String, jni::Object<LatLngBounds>, jni::Object<CameraPosition>, jni::jboolean, jni::String>,
                                            "nativeInitialize",
                                            "finalize",
                                             METHOD(&MapSnapshotter::setStyleUrl, "setStyleUrl"),
